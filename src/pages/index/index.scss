@@ -1,0 +1,31 @@
+.plays {
+  &-title {
+    font-size: 28px;
+    margin: 30px 30px 0;
+    color: #999;
+  }
+
+  &-content {
+    display: flex;
+    padding: 25px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .item {
+    width: 30%;
+    margin-bottom: 30px;
+
+    &-img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    &-name {
+      font-size: 14px;
+      line-height: 1.5;
+      height: 3em;
+      overflow: hidden;
+    }
+  }
+}

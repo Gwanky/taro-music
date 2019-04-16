@@ -13,7 +13,9 @@ class App extends Component {
 
   config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/playListDetail/index',
+      'pages/playMusic/index'
     ],
     window: {
       backgroundTextStyle: 'light',
