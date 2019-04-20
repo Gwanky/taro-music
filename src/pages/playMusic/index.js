@@ -2,6 +2,8 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Audio, Text } from '@tarojs/components'
 import './index.scss'
 
+
+
 export default class Index extends Component {
 
   config = {
@@ -13,8 +15,22 @@ export default class Index extends Component {
     this.state = {
       songId: this.$router.params.id,
       song: {},
-      songUrl: ''
+      songUrl: '',
+      isPlaying: false
     }
+  }
+
+  setAudioState (status) {
+    const audioCtx = Taro.createAudioContext('audio')
+
+    if(!status) {
+      audioCtx.pause();
+    } else {
+      audioCtx.play();
+    }
+    this.setState({
+      isPlaying: status
+    })
   }
 
   componentWillMount () {
@@ -46,23 +62,27 @@ export default class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const { song }  = this.state
+    const { song, songUrl }  = this.state
     const al = song.al || {}
     return (
       <View className='music'>
         <Image className='music-bg' src={al.picUrl} />
         <Text className='music-name'>{song.name}</Text>
-        <Image className='music-img' src={al.picUrl} />
+        <Image className={this.state.isPlaying ? 'music-img rotating' : 'music-img'} src={al.picUrl} />
         <Audio
           className='audio'
-          src={this.state.songUrl}
-          controls
-          autoplay
+          src={songUrl}
+          controls={false}
+          autoplay={false}
           loop={false}
           muted={false}
           initialTime='30'
-          id='video'
+          id='audio'
         />
+        {this.state.isPlaying
+          ? <Text className='op' onClick={this.setAudioState.bind(this, false)}>暂停 </Text>
+          : <Text className='op' onClick={this.setAudioState.bind(this, true)}>播放</Text>
+        }
       </View>
     )
   }

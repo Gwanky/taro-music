@@ -23,10 +23,30 @@
   }
 
   &-img {
-    width: 50%;
-    height: auto;
+    width: 500px;
+    height: 500px;
     margin: 50px 0;
     border-radius: 50%;
     overflow: hidden;
+    animation: rotate 10s linear infinite paused;
+
+    &.rotating {
+      animation-play-state: running;
+    }
+  }
+
+  .op {
+    font-size: 32px;
+    color: #fff;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }

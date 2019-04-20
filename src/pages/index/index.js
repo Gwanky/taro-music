@@ -47,7 +47,7 @@ export default class Index extends Component {
     const personalizedPlayList = this.state.playList.map(item => {
       return (
         <View className='item' key={item.id} onClick={this.navigateTo.bind(this, '/pages/playListDetail/index?id=' + item.id)}>
-          <Image className='item-img' src={item.picUrl} />
+          <Image lazyLoad className='item-img' src={item.picUrl} />
           <View className='item-name'>{item.name}</View>
         </View>
       )
