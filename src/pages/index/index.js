@@ -1,5 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image } from '@tarojs/components'
+import { View, Image, Input, Icon, Text } from '@tarojs/components'
+import { host } from '../../config/config'
 import './index.scss'
 
 export default class Index extends Component {
@@ -11,7 +12,9 @@ export default class Index extends Component {
   constructor () {
     super(...arguments)
     this.state = {
-      playList: []
+      playList: [],
+      searchVal: '',
+      songs: []
     }
   }
 
@@ -21,16 +24,50 @@ export default class Index extends Component {
     })
   }
 
+  searchInput (e) {
+    this.setState({
+      searchVal: e.detail.value
+    })
+  }
+
+  search () {
+    const { searchVal } = this.state
+
+    if(!searchVal) {
+      Taro.showToast({
+        title: '请输入要搜索的歌曲',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    Taro.request({
+      url: `${host}/search?keywords=${searchVal}&limit=30&offset=0`
+    }).then(res => {
+      console.log(res.data.result)
+      this.setState({
+        searchVal: ''
+      })
+    })
+  }
+
   componentWillMount () {
 
   }
 
   componentDidMount () {
     Taro.showLoading({title: 'Loading'})
-    Taro.request({
-      url: 'http://localhost:3000/personalized'
-    }).then(res => {
+    Taro.request({url: host + '/personalized/newsong'}).then(res => {
       Taro.hideLoading()
+      this.setState({
+        songs: res.data.result
+      })
+    })
+
+    Taro.request({
+      url: host + '/personalized'
+    }).then(res => {
       this.setState({
         playList: res.data.result
       })
@@ -44,7 +81,9 @@ export default class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const personalizedPlayList = this.state.playList.map(item => {
+    const { playList, searchVal, songs } = this.state
+
+    const personalizedPlayList = playList.slice(0, 9).map(item => {
       return (
         <View className='item' key={item.id} onClick={this.navigateTo.bind(this, '/pages/playListDetail/index?id=' + item.id)}>
           <Image lazyLoad className='item-img' src={item.picUrl} />
@@ -52,11 +91,53 @@ export default class Index extends Component {
         </View>
       )
     })
+
+    const personalizedSongs = songs.slice(0, 9).map(song => {
+      console.log(song)
+      return (
+        <View
+          className='item' key={song.id}
+          onClick={this.navigateTo.bind(this, '/pages/playMusic/index?id=' + song.id)}
+        >
+          <Image lazyLoad className='item-img' src={song.song.album.picUrl} />
+          <View className='item-name song-name'>{song.name}</View>
+        </View>
+      )
+    })
+
     return (
-      <View className='plays'>
-        <View className='plays-title'>推荐歌单</View>
-        <View className='plays-content'>
-          {personalizedPlayList}
+      <View>
+        <View className='search'>
+          <Input
+            className='search-inp'
+            value={searchVal}
+            placeholder='请输入你要搜索的歌曲'
+            placeholderStyle='color: #e8e8e8'
+            onInput={this.searchInput.bind(this)}
+            onConfirm={this.search.bind(this)}
+          />
+          <Icon type='search' size='20' onClick={this.search.bind(this)} className='search-btn' />
+        </View>
+
+        <View className='plays'>
+          <View className='plays-title'>
+            <Text>推荐歌曲</Text>
+            <Text className='more'>更多</Text>
+          </View>
+          <View className='plays-content'>
+            {personalizedSongs}
+          </View>
+        </View>
+
+
+        <View className='plays'>
+          <View className='plays-title'>
+            <Text>推荐歌单</Text>
+            <Text className='more'>更多</Text>
+          </View>
+          <View className='plays-content'>
+            {personalizedPlayList}
+          </View>
         </View>
       </View>
     )

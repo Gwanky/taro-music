@@ -3,7 +3,6 @@ import { View, Image, Audio, Text } from '@tarojs/components'
 import './index.scss'
 
 
-
 export default class Index extends Component {
 
   config = {
