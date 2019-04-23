@@ -24,34 +24,6 @@ export default class Index extends Component {
     })
   }
 
-  searchInput (e) {
-    this.setState({
-      searchVal: e.detail.value
-    })
-  }
-
-  search () {
-    const { searchVal } = this.state
-
-    if(!searchVal) {
-      Taro.showToast({
-        title: '请输入要搜索的歌曲',
-        icon: 'none',
-        duration: 2000
-      })
-      return
-    }
-
-    Taro.request({
-      url: `${host}/search?keywords=${searchVal}&limit=30&offset=0`
-    }).then(res => {
-      console.log(res.data.result)
-      this.setState({
-        searchVal: ''
-      })
-    })
-  }
-
   componentWillMount () {
 
   }
@@ -93,7 +65,6 @@ export default class Index extends Component {
     })
 
     const personalizedSongs = songs.slice(0, 9).map(song => {
-      console.log(song)
       return (
         <View
           className='item' key={song.id}
@@ -107,16 +78,15 @@ export default class Index extends Component {
 
     return (
       <View>
-        <View className='search'>
+        <View className='search' onClick={this.navigateTo.bind(this, '/pages/search/index')}>
           <Input
             className='search-inp'
             value={searchVal}
             placeholder='请输入你要搜索的歌曲'
             placeholderStyle='color: #e8e8e8'
-            onInput={this.searchInput.bind(this)}
-            onConfirm={this.search.bind(this)}
+            disabled
           />
-          <Icon type='search' size='20' onClick={this.search.bind(this)} className='search-btn' />
+          <Icon type='search' size='20' onClick={this.navigateTo.bind(this, '/pages/search/index?keywords=' + searchVal)} className='search-btn' />
         </View>
 
         <View className='plays'>
