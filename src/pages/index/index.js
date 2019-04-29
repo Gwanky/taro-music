@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Image, Input, Icon, Text } from '@tarojs/components'
+import { View, Image, Input, Icon, Text, Swiper, SwiperItem  } from '@tarojs/components'
 import { host } from '../../config/config'
 import './index.scss'
 
@@ -14,7 +14,8 @@ export default class Index extends Component {
     this.state = {
       playList: [],
       searchVal: '',
-      songs: []
+      songs: [],
+      banners: []
     }
   }
 
@@ -44,6 +45,14 @@ export default class Index extends Component {
         playList: res.data.result
       })
     })
+
+    Taro.request({
+      url: host + '/banner'
+    }).then(res => {
+      this.setState({
+        banners: res.data.banners
+      })
+    })
   }
 
   componentWillUnmount () { }
@@ -53,9 +62,9 @@ export default class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const { playList, searchVal, songs } = this.state
+    const { playList, searchVal, songs, banners } = this.state
 
-    const personalizedPlayList = playList.slice(0, 9).map(item => {
+    const personalizedPlayList = playList.slice(0, 6).map(item => {
       return (
         <View className='item' key={item.id} onClick={this.navigateTo.bind(this, '/pages/playListDetail/index?id=' + item.id)}>
           <Image lazyLoad className='item-img' src={item.picUrl} />
@@ -64,7 +73,7 @@ export default class Index extends Component {
       )
     })
 
-    const personalizedSongs = songs.slice(0, 9).map(song => {
+    const personalizedSongs = songs.slice(0, 6).map(song => {
       return (
         <View
           className='item' key={song.id}
@@ -76,8 +85,16 @@ export default class Index extends Component {
       )
     })
 
+    const swipers = banners.map(banner => {
+      return(
+        <SwiperItem className='banner-item' key={banner.imageUrl}>
+          <Image style='width: 100%; height: 100%;' lazyLoad className='banner-img' src={banner.imageUrl} />
+        </SwiperItem>
+      )
+    })
+
     return (
-      <View>
+      <View className='index'>
         <View className='search' onClick={this.navigateTo.bind(this, '/pages/search/index')}>
           <Input
             className='search-inp'
@@ -87,6 +104,18 @@ export default class Index extends Component {
             disabled
           />
           <Icon type='search' size='20' onClick={this.navigateTo.bind(this, '/pages/search/index?keywords=' + searchVal)} className='search-btn' />
+        </View>
+
+        <View className='banner'>
+          <Swiper
+            indicatorColor='rgba(255,255,255,.8)'
+            indicatorActiveColor='#fff'
+            circular
+            indicatorDots
+            autoplay
+          >
+          {swipers}
+          </Swiper>
         </View>
 
         <View className='plays'>

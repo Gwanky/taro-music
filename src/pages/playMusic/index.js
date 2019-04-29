@@ -22,7 +22,7 @@ export default class Index extends Component {
   setAudioState (status) {
     const audioCtx = Taro.createAudioContext('audio')
 
-    if(!status) {
+    if (!status) {
       audioCtx.pause();
     } else {
       audioCtx.play();

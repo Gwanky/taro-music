@@ -1,0 +1,19 @@
+.login {
+  height: 100vh;
+  padding: 0 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 28px;
+
+  &-inp {
+    width: auto;
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #e8e8e8;
+  }
+
+  &-btn {
+
+  }
+}

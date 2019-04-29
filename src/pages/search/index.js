@@ -13,7 +13,9 @@ export default class Index extends Component {
     super(...arguments)
     this.state = {
       keywords: '',
-      list: []
+      list: [],
+      isFocus: true,
+      hotSearch: []
     }
   }
 
@@ -22,15 +24,30 @@ export default class Index extends Component {
   }
 
   searchInput(e) {
+    let keywords = e.detail.value
+
+    if(!keywords) {
+      this.setState({
+        isFocus: true
+      })
+    }
+
     this.setState({
-      keywords: e.detail.value
+      keywords
     })
   }
 
-  search() {
-    const { keywords } = this.state
+  setFocus(b) {
+    this.setState({
+      isFocus: b
+    })
+  }
 
-    if (!keywords) {
+  search(val) {
+
+    const keywords  = typeof val === 'string' ? val : this.state.keywords
+
+    if (!keywords && !this.isFocus) {
       Taro.showToast({
         title: '请输入要搜索的歌曲',
         icon: 'none',
@@ -39,6 +56,10 @@ export default class Index extends Component {
       return
     }
 
+    this.setState({
+      keywords
+    })
+
     Taro.showLoading({title: '正在加载'})
 
     Taro.request({
@@ -46,6 +67,7 @@ export default class Index extends Component {
     }).then(res => {
       Taro.hideLoading()
       this.setState({
+        isFocus: false,
         list: res.data.result.songs
       })
     })
@@ -56,7 +78,11 @@ export default class Index extends Component {
   }
 
   componentDidMount () {
-
+    Taro.request({url: host + '/search/hot'}).then(res => {
+      this.setState({
+        hotSearch: res.data.result.hots
+      })
+    })
   }
 
   componentWillUnmount () { }
@@ -66,7 +92,7 @@ export default class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const { keywords, list } = this.state
+    const { keywords, list, hotSearch, isFocus } = this.state
 
     const songList = list.map((song, index) => {
       return (
@@ -83,6 +109,12 @@ export default class Index extends Component {
       )
     })
 
+    const hots = hotSearch.map(item => {
+      return (
+        <Text onClick={this.search.bind(this, item.first)} className='hot-search-txt' key={item.first}>{item.first}</Text>
+      )
+    })
+
     return (
       <View className='search'>
         <View className='search-form'>
@@ -94,13 +126,15 @@ export default class Index extends Component {
             placeholderStyle='color: #e8e8e8'
             onInput={this.searchInput.bind(this)}
             onConfirm={this.search.bind(this)}
+            onFocus={this.setFocus.bind(this, true)}
           />
           <Icon type='search' size='20' onClick={this.search.bind(this)} className='search-btn' />
         </View>
 
-        <View className='song-list'>
-          {songList}
-        </View>
+        {isFocus
+          ? <View className='hot-search'>{hots}</View>
+          : <View className='song-list'>{songList}</View>
+        }
       </View>
     )
   }
