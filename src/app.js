@@ -10,7 +10,7 @@ import './app.scss'
 // }
 
 class App extends Component {
-
+  // 123
   config = {
     pages: [
       'pages/login/index',
