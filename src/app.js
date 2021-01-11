@@ -9,6 +9,9 @@ import './app.scss'
 //   require('nerv-devtools')
 // }
 
+
+// hahah 
+
 class App extends Component {
   // 123
   config = {
